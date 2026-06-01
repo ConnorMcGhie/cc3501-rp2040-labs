@@ -19,6 +19,21 @@ int main()
     leds_init();
     log(LogLevel::INFORMATION, "LED driver ready");
 
+     for (;;) {
+        // Light each LED one at a time
+        leds_set(0, Colours::RED);
+        sleep_ms(500);
+
+        leds_set(1, Colours::GREEN);
+        sleep_ms(500);
+
+        leds_set(2, Colours::BLUE);
+        sleep_ms(500);
+
+        // Clear all LEDs
+        leds_clear();
+        sleep_ms(500);
+     }
  
     return 0;
 }
