@@ -16,14 +16,21 @@ namespace Colours {
     constexpr Colour WHITE = {255, 255, 255};
 }
 
-// Initialise the LED driver. Must be called once before any other led_* functions.
-void leds_init(void);
-
-// Set a single LED to a colour and immediately update the hardware.
-void leds_set(uint8_t index, Colour colour);
-
-// Turn all LEDs off and immediately update the hardware.
-void leds_clear(void);
-
-// Write the current led_state array to the hardware with blocking.
-void write_to_hardware(void);
+class LEDDriver {
+public:
+    LEDDriver(PIO pio, uint sm);
+ 
+    // Stage a colour change for a single LED (0-indexed). Does not update the hardware.
+    void set(uint8_t index, Colour colour);
+ 
+    // Stage all LEDs to be turned off. Does not update the hardware.
+    void clear(void);
+ 
+    // Commit all staged changes to the hardware.
+    void show(void);
+ 
+private:
+    PIO   _pio;
+    uint  _sm;
+    Colour _state[NUM_LEDS];
+};

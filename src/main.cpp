@@ -15,30 +15,30 @@ int main()
  
     uint pio_program_offset = pio_add_program(pio0, &ws2812_program);
     ws2812_program_init(pio0, 0, pio_program_offset, LED_PIN, 800000, false);
- 
-    leds_init();
-    log(LogLevel::INFORMATION, "LED driver ready");
 
-     for (;;) {
+    LEDDriver leds(pio0, 0);
+    log(LogLevel::INFORMATION, "LED driver ready");
+ 
+    for (;;) {
         // Stage multiple changes, then commit them all at once
-        leds_set(0, Colours::RED);
-        leds_set(1, Colours::GREEN);
-        leds_set(2, Colours::BLUE);
-        write_to_hardware();
+        leds.set(0, Colours::RED);
+        leds.set(1, Colours::GREEN);
+        leds.set(2, Colours::BLUE);
+        leds.show();
         sleep_ms(1000);
  
         // Stage a different pattern and commit
-        leds_set(0, Colours::BLUE);
-        leds_set(1, Colours::RED);
-        leds_set(2, Colours::GREEN);
-        write_to_hardware();
+        leds.set(0, Colours::BLUE);
+        leds.set(1, Colours::RED);
+        leds.set(2, Colours::GREEN);
+        leds.show();
         sleep_ms(1000);
  
         // Clear everything and commit
-        leds_clear();
-        write_to_hardware();
+        leds.clear();
+        leds.show();
         sleep_ms(500);
-     }
+    }
  
     return 0;
 }
