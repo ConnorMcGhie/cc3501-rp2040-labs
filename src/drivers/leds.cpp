@@ -43,3 +43,11 @@ void LEDDriver::show(void)
         pio_sm_put_blocking(_pio, _sm, word);
     }
 }
+
+Colour LEDDriver::get(uint8_t index) const
+{
+    if (index >= NUM_LEDS) {
+        return Colours::OFF;
+    }
+    return _state[index];
+}

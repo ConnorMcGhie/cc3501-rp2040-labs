@@ -40,6 +40,9 @@ public:
  
     // Commit all staged changes to the hardware.
     void show(void);
+
+    // Get the current staged colour of an LED (0-indexed).
+    Colour get(uint8_t index) const;
  
 private:
     PIO   _pio;

@@ -57,6 +57,17 @@ int main()
         leds.clear();
         leds.show();
         sleep_ms(500);
+
+        // DEMO 3: Querying the colour of an LED (with visual feedback
+        // by setting to the same colour)
+        leds.set(0, Colours::RED);
+        Colour c = leds.get(0);
+        leds.set(1, c);
+        leds.show();
+        sleep_ms(1000);
+
+        leds.clear();
+        sleep_ms(1000);
     }
  
     return 0;
