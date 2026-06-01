@@ -20,6 +20,7 @@ int main()
     log(LogLevel::INFORMATION, "LED driver ready");
  
     for (;;) {
+        // DEMO 1: Setting LEDs one at a time, then committing changes
         // Stage multiple changes, then commit them all at once
         leds.set(0, Colours::RED);
         leds.set(1, Colours::GREEN);
@@ -35,6 +36,24 @@ int main()
         sleep_ms(1000);
  
         // Clear everything and commit
+        leds.clear();
+        leds.show();
+        sleep_ms(500);
+
+        // DEMO 2: Setting multiple LEDs at once, then committing changes
+        // Create array of changes to LEDs
+        LEDUpdate pattern[] = {
+            {0, Colours::RED},
+            {5, Colours::GREEN},
+            {11, Colours::BLUE},
+        };
+        
+        // Parse changes into set_multiple method, then commit
+        leds.set_multiple(pattern, 3);
+        leds.show();
+        sleep_ms(1000);
+ 
+        // Clear and commit
         leds.clear();
         leds.show();
         sleep_ms(500);

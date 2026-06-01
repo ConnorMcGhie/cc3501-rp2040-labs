@@ -3,8 +3,6 @@
 #include "hardware/pio.h"
 #include "WS2812.pio.h"
 
-static Colour led_state[NUM_LEDS];
-
 
 LEDDriver::LEDDriver(PIO pio, uint sm) : _pio(pio), _sm(sm)
 {
@@ -20,6 +18,13 @@ void LEDDriver::set(uint8_t index, Colour colour)
         return;
     }
     _state[index] = colour;
+}
+
+void LEDDriver::set_multiple(const LEDUpdate* updates, uint8_t count)
+{
+    for (int i = 0; i < count; i++) {
+        set(updates[i].index, updates[i].colour);
+    }
 }
  
 void LEDDriver::clear(void)
