@@ -20,18 +20,23 @@ int main()
     log(LogLevel::INFORMATION, "LED driver ready");
 
      for (;;) {
-        // Light each LED one at a time
+        // Stage multiple changes, then commit them all at once
         leds_set(0, Colours::RED);
-        sleep_ms(500);
-
         leds_set(1, Colours::GREEN);
-        sleep_ms(500);
-
         leds_set(2, Colours::BLUE);
-        sleep_ms(500);
-
-        // Clear all LEDs
+        write_to_hardware();
+        sleep_ms(1000);
+ 
+        // Stage a different pattern and commit
+        leds_set(0, Colours::BLUE);
+        leds_set(1, Colours::RED);
+        leds_set(2, Colours::GREEN);
+        write_to_hardware();
+        sleep_ms(1000);
+ 
+        // Clear everything and commit
         leds_clear();
+        write_to_hardware();
         sleep_ms(500);
      }
  

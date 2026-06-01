@@ -5,8 +5,8 @@
 
 static Colour led_state[NUM_LEDS];
 
-// Write the current led_state array to the hardware with blocking.
-static void write_to_hardware(void)
+
+void write_to_hardware(void)
 {
     for (int i = 0; i < NUM_LEDS; i++) {
         // WS2812 expects GRB order, packed into the top 24 bits
@@ -31,7 +31,6 @@ void leds_set(uint8_t index, Colour colour)
         return;
     }
     led_state[index] = colour;
-    write_to_hardware();
 }
  
 void leds_clear(void)
@@ -39,5 +38,4 @@ void leds_clear(void)
     for (int i = 0; i < NUM_LEDS; i++) {
         led_state[i] = Colours::OFF;
     }
-    write_to_hardware();
 }

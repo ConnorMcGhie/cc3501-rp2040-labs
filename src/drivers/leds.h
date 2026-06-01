@@ -24,3 +24,6 @@ void leds_set(uint8_t index, Colour colour);
 
 // Turn all LEDs off and immediately update the hardware.
 void leds_clear(void);
+
+// Write the current led_state array to the hardware with blocking.
+void write_to_hardware(void);
