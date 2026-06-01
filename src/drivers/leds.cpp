@@ -18,6 +18,7 @@ void LEDDriver::set(uint8_t index, Colour colour)
         return;
     }
     _state[index] = colour;
+    _dirty = true;
 }
 
 void LEDDriver::set_multiple(const LEDUpdate* updates, uint8_t count)
@@ -32,6 +33,7 @@ void LEDDriver::clear(void)
     for (int i = 0; i < NUM_LEDS; i++) {
         _state[i] = Colours::OFF;
     }
+    _dirty = true;
 }
  
 void LEDDriver::show(void)
@@ -42,6 +44,7 @@ void LEDDriver::show(void)
                       | ((uint32_t)_state[i].blue  <<  8);
         pio_sm_put_blocking(_pio, _sm, word);
     }
+    _dirty = false;
 }
 
 Colour LEDDriver::get(uint8_t index) const
@@ -50,4 +53,9 @@ Colour LEDDriver::get(uint8_t index) const
         return Colours::OFF;
     }
     return _state[index];
+}
+
+bool LEDDriver::is_dirty(void) const
+{
+    return _dirty;
 }

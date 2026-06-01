@@ -43,9 +43,13 @@ public:
 
     // Get the current staged colour of an LED (0-indexed).
     Colour get(uint8_t index) const;
+
+    // Returns true if staged values have not yet been committed with show().
+    bool is_dirty(void) const;
  
 private:
     PIO   _pio;
     uint  _sm;
     Colour _state[NUM_LEDS];
+    bool   _dirty;
 };
