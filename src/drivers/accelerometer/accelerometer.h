@@ -34,6 +34,13 @@ enum class AccelRange : uint8_t {
     G_16 = 0x30,
 };
 
+// Holds a single accelerometer reading
+struct AccelData {
+    int16_t x;
+    int16_t y;
+    int16_t z;
+};
+
 class Accelerometer {
 public:
     Accelerometer(i2c_inst_t* i2c);
@@ -45,6 +52,10 @@ public:
     // Configure the sample rate and measurement range.
     // Must be called after init().
     bool configure(AccelSampleRate rate, AccelRange range);
+
+    // Read the latest X, Y, Z acceleration values.
+    // Returns false if the read failed.
+    bool read(AccelData* data);
 
 
 private:

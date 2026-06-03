@@ -30,6 +30,24 @@ bool Accelerometer::configure(AccelSampleRate rate, AccelRange range)
     return true;
 }
 
+bool Accelerometer::read(AccelData* data)
+{
+    uint8_t buf[6];
+ 
+    // Setting MSB of register address enables multi-byte read (auto-increment)
+    if (!read_registers(ACCEL_REG_OUT_X_L | 0x80, buf, 6)) {
+        return false;
+    }
+ 
+    // Each axis is a 16-bit value split across two registers (low byte first).
+    // The data is left-aligned in 16 bits, so right shift by 6 to get 10-bit value.
+    data->x = (int16_t)(buf[0] | (buf[1] << 8)) >> 6;
+    data->y = (int16_t)(buf[2] | (buf[3] << 8)) >> 6;
+    data->z = (int16_t)(buf[4] | (buf[5] << 8)) >> 6;
+ 
+    return true;
+}
+
 bool Accelerometer::write_register(uint8_t reg, uint8_t value)
 {
     uint8_t buf[2] = {reg, value};
