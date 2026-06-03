@@ -2,12 +2,13 @@
 #include "pico/stdlib.h"
 #include "hardware/gpio.h"
 #include "hardware/pio.h"
+#include "hardware/i2c.h"
  
 #include "WS2812.pio.h"
 #include "drivers/logging/logging.h"
-#include "drivers/leds.h"
- 
-#define LED_PIN 14
+#include "drivers/leds/leds.h"
+#include "main.h"
+
 
 int main()
 {
@@ -18,17 +19,22 @@ int main()
 
     LEDDriver leds(pio0, 0);
     log(LogLevel::INFORMATION, "LED driver ready");
- 
+
     // for (;;) {
-    //     // DEMO 1: Setting LEDs one at a time, then committing changes
-    //     // Stage multiple changes, then commit them all at once
+    //     //DEMO 1: Setting LEDs one at a time, then committing changes
+    //     // Stage multiple changes committing after each, with a delay in between to see changes
     //     leds.set(0, Colours::RED);
+    //     leds.show();
+    //     sleep_ms(500);
     //     leds.set(1, Colours::GREEN);
+    //     leds.show();
+    //     sleep_ms(500);
     //     leds.set(2, Colours::BLUE);
     //     leds.show();
+    //     sleep_ms(500);
     //     sleep_ms(1000);
  
-    //     // Stage a different pattern and commit
+    //     // Stage a different pattern and commit at once
     //     leds.set(0, Colours::BLUE);
     //     leds.set(1, Colours::RED);
     //     leds.set(2, Colours::GREEN);
@@ -67,12 +73,8 @@ int main()
     //     sleep_ms(1000);
 
     //     leds.clear();
-    //     sleep_ms(1000);
+    //     sleep_ms(1000);}
     // }
-
-    for (;;) {
-
-    }
  
     return 0;
 }
