@@ -7,6 +7,7 @@
 #include "WS2812.pio.h"
 #include "drivers/logging/logging.h"
 #include "drivers/leds/leds.h"
+#include "drivers/accelerometer/accelerometer.h"
 #include "main.h"
 
 
@@ -14,11 +15,32 @@ int main()
 {
     stdio_init_all();
  
+    // Initialise PIO for LEDs
     uint pio_program_offset = pio_add_program(pio0, &ws2812_program);
     ws2812_program_init(pio0, 0, pio_program_offset, LED_PIN, 800000, false);
-
     LEDDriver leds(pio0, 0);
-    log(LogLevel::INFORMATION, "LED driver ready");
+ 
+    // Initialise I2C for accelerometer
+    i2c_init(i2c0, 400000);
+    gpio_set_function(I2C_SCL, GPIO_FUNC_I2C);
+    gpio_set_function(I2C_SDA, GPIO_FUNC_I2C);
+ 
+    // Initialise accelerometer and check WHO_AM_I
+    Accelerometer accel(i2c0);
+    if (accel.init()) {
+        log(LogLevel::INFORMATION, "Accelerometer OK");
+        leds.set(0, Colours::GREEN);
+    } else {
+        log(LogLevel::ERROR, "Accelerometer failed");
+        leds.set(0, Colours::RED);
+    }
+    leds.show();
+ 
+    for (;;) {
+        sleep_ms(1000);
+    }
+ 
+    return 0;
 
     // for (;;) {
     //     //DEMO 1: Setting LEDs one at a time, then committing changes
@@ -75,6 +97,5 @@ int main()
     //     leds.clear();
     //     sleep_ms(1000);}
     // }
- 
-    return 0;
+
 }
