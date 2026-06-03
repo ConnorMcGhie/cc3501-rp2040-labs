@@ -13,6 +13,23 @@ bool Accelerometer::init(void)
     return who_am_i == ACCEL_WHO_AM_I_VAL;
 }
 
+bool Accelerometer::configure(AccelSampleRate rate, AccelRange range)
+{
+    // CTRL_REG1: set sample rate and enable all three axes (bits 0-2)
+    uint8_t ctrl1 = (uint8_t)rate | 0x07;
+    if (!write_register(ACCEL_REG_CTRL1, ctrl1)) {
+        return false;
+    }
+ 
+    // CTRL_REG4: set measurement range, enable block data update (BDU, bit 7)
+    uint8_t ctrl4 = (uint8_t)range | 0x80;
+    if (!write_register(ACCEL_REG_CTRL4, ctrl4)) {
+        return false;
+    }
+ 
+    return true;
+}
+
 bool Accelerometer::write_register(uint8_t reg, uint8_t value)
 {
     uint8_t buf[2] = {reg, value};
