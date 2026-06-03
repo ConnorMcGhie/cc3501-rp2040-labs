@@ -57,9 +57,12 @@ public:
     // Returns false if the read failed.
     bool read(AccelData* data);
 
-
 private:
     i2c_inst_t* _i2c;
+    AccelRange  _range;
+ 
+    // Returns the sensitivity in mg/digit for the configured range.
+    float sensitivity(void) const;
 
     bool write_register(uint8_t reg, uint8_t value);
     bool read_register(uint8_t reg, uint8_t* value);

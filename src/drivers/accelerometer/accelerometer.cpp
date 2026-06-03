@@ -48,6 +48,18 @@ bool Accelerometer::read(AccelData* data)
     return true;
 }
 
+float Accelerometer::sensitivity(void) const
+{
+    // Sensitivity values in mg/digit for 10-bit normal power mode (from datasheet)
+    switch (_range) {
+        case AccelRange::G_2:  return 3.9f;
+        case AccelRange::G_4:  return 7.8f;
+        case AccelRange::G_8:  return 15.6f;
+        case AccelRange::G_16: return 46.9f;
+        default:               return 3.9f;
+    }
+}
+
 bool Accelerometer::write_register(uint8_t reg, uint8_t value)
 {
     uint8_t buf[2] = {reg, value};
