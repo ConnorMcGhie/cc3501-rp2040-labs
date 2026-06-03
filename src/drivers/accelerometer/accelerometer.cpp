@@ -26,7 +26,10 @@ bool Accelerometer::configure(AccelSampleRate rate, AccelRange range)
     if (!write_register(ACCEL_REG_CTRL4, ctrl4)) {
         return false;
     }
- 
+
+    // Store the range so sensitivity() can use it during conversion
+    _range = range;
+    return true;
     return true;
 }
 
