@@ -10,6 +10,7 @@
 #define ACCEL_REG_WHO_AM_I  0x0F
 #define ACCEL_REG_CTRL1     0x20
 #define ACCEL_REG_CTRL4     0x23
+#define ACCEL_REG_OUT_X_L   0x28
 
 // WHO_AM_I expected response
 #define ACCEL_WHO_AM_I_VAL  0x33
@@ -45,9 +46,11 @@ public:
     // Must be called after init().
     bool configure(AccelSampleRate rate, AccelRange range);
 
+
 private:
     i2c_inst_t* _i2c;
 
     bool write_register(uint8_t reg, uint8_t value);
     bool read_register(uint8_t reg, uint8_t* value);
+    bool read_registers(uint8_t reg, uint8_t* buf, uint8_t len);
 };

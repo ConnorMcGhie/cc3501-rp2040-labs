@@ -49,3 +49,14 @@ bool Accelerometer::read_register(uint8_t reg, uint8_t* value)
     result = i2c_read_blocking(_i2c, ACCEL_I2C_ADDR, value, 1, false);
     return result != PICO_ERROR_GENERIC;
 }
+
+bool Accelerometer::read_registers(uint8_t reg, uint8_t* buf, uint8_t len)
+{
+    int result = i2c_write_blocking(_i2c, ACCEL_I2C_ADDR, &reg, 1, true);
+    if (result == PICO_ERROR_GENERIC) {
+        return false;
+    }
+ 
+    result = i2c_read_blocking(_i2c, ACCEL_I2C_ADDR, buf, len, false);
+    return result != PICO_ERROR_GENERIC;
+}
