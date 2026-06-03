@@ -51,6 +51,22 @@ bool Accelerometer::read(AccelData* data)
     return true;
 }
 
+bool Accelerometer::read_g(AccelDataFloat* data)
+{
+    AccelData raw;
+    if (!read(&raw)) {
+        return false;
+    }
+ 
+    // sensitivity() returns mg/digit, divide by 1000 to convert mg -> g
+    float scale = sensitivity() / 1000.0f;
+    data->x = raw.x * scale;
+    data->y = raw.y * scale;
+    data->z = raw.z * scale;
+ 
+    return true;
+}
+
 float Accelerometer::sensitivity(void) const
 {
     // Sensitivity values in mg/digit for 10-bit normal power mode (from datasheet)

@@ -41,6 +41,12 @@ struct AccelData {
     int16_t z;
 };
 
+struct AccelDataFloat {
+    float x;
+    float y;
+    float z;
+};
+
 class Accelerometer {
 public:
     Accelerometer(i2c_inst_t* i2c);
@@ -56,6 +62,10 @@ public:
     // Read the latest X, Y, Z acceleration values.
     // Returns false if the read failed.
     bool read(AccelData* data);
+
+    // Read the latest X, Y, Z acceleration values converted to g.
+    // Returns false if the read failed.
+    bool read_g(AccelDataFloat* data);
 
 private:
     i2c_inst_t* _i2c;
