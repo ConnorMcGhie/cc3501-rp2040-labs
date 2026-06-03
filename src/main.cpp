@@ -25,19 +25,28 @@ int main()
     gpio_set_function(I2C_SCL, GPIO_FUNC_I2C);
     gpio_set_function(I2C_SDA, GPIO_FUNC_I2C);
  
-    // Initialise accelerometer and check WHO_AM_I
+    // Initialise and configure accelerometer
     Accelerometer accel(i2c0);
-    if (accel.init()) {
-        log(LogLevel::INFORMATION, "Accelerometer OK");
-        leds.set(0, Colours::GREEN);
-    } else {
-        log(LogLevel::ERROR, "Accelerometer failed");
+    if (!accel.init()) {
+        log(LogLevel::ERROR, "Accelerometer init failed");
         leds.set(0, Colours::RED);
+        leds.show();
+        while(true);
     }
+ 
+    if (!accel.configure(AccelSampleRate::HZ_100, AccelRange::G_2)) {
+        log(LogLevel::ERROR, "Accelerometer configure failed");
+        leds.set(0, Colours::RED);
+        leds.show();
+        while(true);
+    }
+ 
+    log(LogLevel::INFORMATION, "Accelerometer ready");
+    leds.set(0, Colours::GREEN);
     leds.show();
  
     for (;;) {
-        sleep_ms(1000);
+        sleep_ms(10);
     }
  
     return 0;
