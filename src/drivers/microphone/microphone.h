@@ -5,6 +5,7 @@
 
 #define MIC_ADC_GPIO    26
 #define MIC_ADC_CHANNEL  0
+#define MIC_SAMPLE_COUNT 1024
 
 /**
  * @brief Initialise the ADC peripheral and configure it for microphone capture.
@@ -29,3 +30,7 @@ void microphone_init(void);
  * @param num_samples Number of samples to capture (e.g. 1024).
  */
 void microphone_read(uint16_t *buffer, size_t num_samples);
+
+// Process raw ADC samples into a DC-removed, Q15 fixed-point buffer.
+// Subtracts the DC bias (mean) and left-shifts to fill Q15 range.
+void microphone_process(const uint16_t *raw, int16_t *out, size_t num_samples);

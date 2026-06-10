@@ -54,8 +54,7 @@
 
 int main()
 {
-    // Test that uses USB for stdio to print the mean sample value and first 8 samples from the microphone.
-    // Should be approximately 2048 ideally (but will vary based on ambient noise and microphone gain).
+
     stdio_init_all();
     while (!stdio_usb_connected()) {
         sleep_ms(100);
@@ -65,20 +64,20 @@ int main()
 
     microphone_init();
 
-    uint16_t buf[1024];
-    microphone_read(buf, 1024);
+    uint16_t raw[MIC_SAMPLE_COUNT];
+    int16_t  processed[MIC_SAMPLE_COUNT];
 
+    microphone_read(raw, MIC_SAMPLE_COUNT);
+    microphone_process(raw, processed, MIC_SAMPLE_COUNT);
+
+    // Should be close to 0 (DC removed)
     int32_t sum = 0;
-    for (int i = 0; i < 1024; i++) {
-        sum += buf[i];
-    }
-    int32_t mean = sum / 1024;
+    for (int i = 0; i < MIC_SAMPLE_COUNT; i++) sum += processed[i];
+    printf("Processed mean (should be ~0): %d\n", (int)(sum / MIC_SAMPLE_COUNT));
 
-    printf("Mean: %d\n", (int)mean);
-    printf("First 8 samples: ");
-    for (int i = 0; i < 8; i++) {
-        printf("%d ", (int)buf[i]);
-    }
+    // Should show positive and negative values oscillating around 0
+    printf("First 8 processed: ");
+    for (int i = 0; i < 8; i++) printf("%d ", (int)processed[i]);
     printf("\n");
     fflush(stdout);
 
