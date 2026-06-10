@@ -9,6 +9,7 @@
 #include "drivers/leds/leds.h"
 #include "drivers/accelerometer/accelerometer.h"
 #include "main.h"
+#include "drivers/microphone/microphone.h"
 
 // ALSO FOR WEEK 3: ACCELEROMETER
 // Update a row of 4 LEDs based on an acceleration value in g
@@ -53,6 +54,35 @@
 
 int main()
 {
+    // Test that uses USB for stdio to print the mean sample value and first 8 samples from the microphone.
+    // Should be approximately 2048 ideally (but will vary based on ambient noise and microphone gain).
+    stdio_init_all();
+    while (!stdio_usb_connected()) {
+        sleep_ms(100);
+    }
+    printf("Ready\n");
+    fflush(stdout);
+
+    microphone_init();  // <-- add this
+
+    uint16_t buf[1024];
+    microphone_read(buf, 1024);
+
+    int32_t sum = 0;
+    for (int i = 0; i < 1024; i++) {
+        sum += buf[i];
+    }
+    int32_t mean = sum / 1024;
+
+    printf("Mean: %d\n", (int)mean);
+    printf("First 8 samples: ");
+    for (int i = 0; i < 8; i++) {
+        printf("%d ", (int)buf[i]);
+    }
+    printf("\n");
+    fflush(stdout);
+
+    return 0;
     // WEEK 3: ACCELEROMETER
     // stdio_init_all();
  
