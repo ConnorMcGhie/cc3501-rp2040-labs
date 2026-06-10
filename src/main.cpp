@@ -63,7 +63,7 @@ int main()
     printf("Ready\n");
     fflush(stdout);
 
-    microphone_init();  // <-- add this
+    microphone_init();
 
     uint16_t buf[1024];
     microphone_read(buf, 1024);
