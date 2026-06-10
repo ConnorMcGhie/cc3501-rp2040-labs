@@ -34,3 +34,6 @@ void microphone_read(uint16_t *buffer, size_t num_samples);
 // Process raw ADC samples into a DC-removed, Q15 fixed-point buffer.
 // Subtracts the DC bias (mean) and left-shifts to fill Q15 range.
 void microphone_process(const uint16_t *raw, int16_t *out, size_t num_samples);
+
+// Apply Hanning window to a Q15 time-domain buffer in-place.
+void microphone_apply_window(int16_t *samples, size_t num_samples);
