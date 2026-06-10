@@ -51,34 +51,78 @@
 //     }
 // }
 
+void update_leds_fft(LEDDriver& leds, q15_t *mag)
+{
+    // Logarithmically spaced bin boundaries from lab sheet:
+    // ceil(logspace(log10(5), log10(512), 13))
+    static const int bin_boundaries[13] = {
+        6, 8, 11, 16, 24, 35, 51, 75, 110, 161, 237, 349, 400
+    };
+
+    leds.clear();
+
+    for (int led = 0; led < NUM_LEDS; led++) {
+        int bin_start = bin_boundaries[led];
+        int bin_end   = bin_boundaries[led + 1];
+
+        // Sum energy across all bins in this LED's frequency band.
+        // Use int32_t to avoid overflow when summing multiple q15_t values.
+        int32_t energy = 0;
+        for (int b = bin_start; b < bin_end; b++) {
+            energy += mag[b];
+        }
+
+        // Normalise energy to 0-255 brightness.
+        // Threshold filters out noise floor; scale sets sensitivity.
+        // These values will need tuning based on your environment.
+        static constexpr int32_t THRESHOLD = 500;
+        static constexpr int32_t SCALE     = 2000;
+
+        if (energy < THRESHOLD) {
+            leds.set(led, Colours::OFF);
+        } else {
+            // Clamp to 0-255
+            int32_t brightness = ((energy - THRESHOLD) * 255) / SCALE;
+            if (brightness > 255) brightness = 255;
+
+            // Green at low energy, red at high energy
+            Colour c;
+            c.red   = (uint8_t)(brightness);
+            c.green = (uint8_t)(255 - brightness);
+            c.blue  = 0;
+            leds.set(led, c);
+        }
+    }
+
+    leds.show();
+}
+
 
 int main()
 {
 
     stdio_init_all();
-    while (!stdio_usb_connected()) {
-        sleep_ms(100);
-    }
-    printf("Ready\n");
-    fflush(stdout);
+
+    // Initialise PIO for LEDs
+    uint pio_program_offset = pio_add_program(pio0, &ws2812_program);
+    ws2812_program_init(pio0, 0, pio_program_offset, LED_PIN, 800000, false);
+    LEDDriver leds(pio0, 0);
 
     microphone_init();
 
     uint16_t raw[MIC_SAMPLE_COUNT];
     int16_t  processed[MIC_SAMPLE_COUNT];
     int16_t  fft_output[MIC_FFT_OUTPUT_SIZE];
+    q15_t    mag[MIC_MAG_OUTPUT_SIZE];
 
-    microphone_read(raw, MIC_SAMPLE_COUNT);
-    microphone_process(raw, processed, MIC_SAMPLE_COUNT);
-    microphone_apply_window(processed, MIC_SAMPLE_COUNT);
-    microphone_fft(processed, fft_output);
-
-    // Print first 8 complex pairs to verify output is non-zero
-    printf("FFT output (real, imag pairs):\n");
-    for (int i = 0; i < 8; i++) {
-        printf("bin %d: real=%d imag=%d\n", i, (int)fft_output[i*2], (int)fft_output[i*2+1]);
+    for (;;) {
+        microphone_read(raw, MIC_SAMPLE_COUNT);
+        microphone_process(raw, processed, MIC_SAMPLE_COUNT);
+        microphone_apply_window(processed, MIC_SAMPLE_COUNT);
+        microphone_fft(processed, fft_output);
+        microphone_magnitude_squared(fft_output, mag);
+        update_leds_fft(leds, mag);
     }
-    fflush(stdout);
 
     return 0;
     // WEEK 3: ACCELEROMETER

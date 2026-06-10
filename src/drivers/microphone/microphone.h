@@ -9,8 +9,10 @@ extern arm_rfft_instance_q15 fft_instance;
 #define MIC_ADC_GPIO    26
 #define MIC_ADC_CHANNEL  0
 #define MIC_SAMPLE_COUNT 1024
-// Output buffer for complex FFT result (2x sample count for real/imag pairs).
-#define MIC_FFT_OUTPUT_SIZE (MIC_SAMPLE_COUNT * 2)
+
+// RFFT produces N/2 + 1 unique complex bins, so output is that many magnitude values
+#define MIC_FFT_OUTPUT_SIZE (MIC_SAMPLE_COUNT + 2)
+#define MIC_MAG_OUTPUT_SIZE ((MIC_SAMPLE_COUNT / 2) + 1)
 
 /**
  * @brief Initialise the ADC peripheral and configure it for microphone capture.
@@ -44,3 +46,5 @@ void microphone_process(const uint16_t *raw, int16_t *out, size_t num_samples);
 void microphone_apply_window(int16_t *samples, size_t num_samples);
 
 void microphone_fft(int16_t *samples, int16_t *fft_output);
+
+void microphone_magnitude_squared(int16_t *fft_output, q15_t *mag_output);

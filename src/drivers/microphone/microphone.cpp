@@ -96,3 +96,21 @@ void microphone_fft(int16_t *samples, int16_t *fft_output)
 {
     arm_rfft_q15(&fft_instance, samples, fft_output);
 }
+
+void microphone_magnitude_squared(int16_t *fft_output, q15_t *mag_output)
+{
+    // arm_rfft_q15 internally scales output down to prevent overflow, leaving
+    // values too small for Q15 squaring. Scale back up before calling
+    // arm_cmplx_mag_squared_q15, saturating to int16 range.
+    static constexpr size_t NUM_COMPLEX = (MIC_SAMPLE_COUNT / 2) + 1;
+
+    int16_t scaled[MIC_FFT_OUTPUT_SIZE];
+    for (size_t i = 0; i < MIC_FFT_OUTPUT_SIZE; i++) {
+        int32_t val = (int32_t)fft_output[i] << 6;
+        if (val >  32767) val =  32767;
+        if (val < -32768) val = -32768;
+        scaled[i] = (int16_t)val;
+    }
+
+    arm_cmplx_mag_squared_q15(scaled, mag_output, NUM_COMPLEX);
+}
