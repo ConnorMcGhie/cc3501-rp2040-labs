@@ -66,19 +66,18 @@ int main()
 
     uint16_t raw[MIC_SAMPLE_COUNT];
     int16_t  processed[MIC_SAMPLE_COUNT];
+    int16_t  fft_output[MIC_FFT_OUTPUT_SIZE];
 
     microphone_read(raw, MIC_SAMPLE_COUNT);
     microphone_process(raw, processed, MIC_SAMPLE_COUNT);
+    microphone_apply_window(processed, MIC_SAMPLE_COUNT);
+    microphone_fft(processed, fft_output);
 
-    // Should be close to 0 (DC removed)
-    int32_t sum = 0;
-    for (int i = 0; i < MIC_SAMPLE_COUNT; i++) sum += processed[i];
-    printf("Processed mean (should be ~0): %d\n", (int)(sum / MIC_SAMPLE_COUNT));
-
-    // Should show positive and negative values oscillating around 0
-    printf("First 8 processed: ");
-    for (int i = 0; i < 8; i++) printf("%d ", (int)processed[i]);
-    printf("\n");
+    // Print first 8 complex pairs to verify output is non-zero
+    printf("FFT output (real, imag pairs):\n");
+    for (int i = 0; i < 8; i++) {
+        printf("bin %d: real=%d imag=%d\n", i, (int)fft_output[i*2], (int)fft_output[i*2+1]);
+    }
     fflush(stdout);
 
     return 0;

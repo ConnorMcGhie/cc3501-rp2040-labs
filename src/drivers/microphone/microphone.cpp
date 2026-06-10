@@ -16,6 +16,9 @@ static constexpr float ADC_CLKDIV = (48'000'000.0f / 44'100.0f) - 1.0f;
 // Left shift applied after DC removal. // Using 5 gives extra gain to better utilise the Q15 range (minimum is 3 with 12-bit ADC).
 static constexpr int Q15_SHIFT = 5;
 
+// FFT instance - initialised once and reused each call
+arm_rfft_instance_q15 fft_instance;
+
 void microphone_init(void)
 {
     // Initialise the ADC hardware block (safe to call multiple times).
@@ -39,6 +42,9 @@ void microphone_init(void)
         false,  // err_in_fifo
         false   // byte_shift
     );
+
+    // Initialise FFT instance.
+    arm_rfft_init_q15(&fft_instance, MIC_SAMPLE_COUNT, 0, 1);
 }
 
 void microphone_read(uint16_t *buffer, size_t num_samples)
@@ -84,4 +90,9 @@ void microphone_apply_window(int16_t *samples, size_t num_samples)
         // Right shift by 15 to return to Q15 format.
         samples[i] = (int16_t)(((int32_t)samples[i] * hanning_window[i]) >> 15);
     }
+}
+
+void microphone_fft(int16_t *samples, int16_t *fft_output)
+{
+    arm_rfft_q15(&fft_instance, samples, fft_output);
 }
