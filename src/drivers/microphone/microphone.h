@@ -3,11 +3,10 @@
 #include <stdint.h>
 #include <stddef.h>
 #include "arm_math.h"
+#include "board.h"
 
 extern arm_rfft_instance_q15 fft_instance;
 
-#define MIC_ADC_GPIO    26
-#define MIC_ADC_CHANNEL  0
 #define MIC_SAMPLE_COUNT 1024
 
 // RFFT produces N/2 + 1 unique complex bins, so output is that many magnitude values
